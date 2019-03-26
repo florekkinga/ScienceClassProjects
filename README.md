@@ -1,2 +1,2 @@
-# physicsProject
+# physicsProjects
 simple artillery game
