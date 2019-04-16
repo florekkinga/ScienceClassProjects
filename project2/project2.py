@@ -34,9 +34,9 @@ for i in range(0, num_lines):
     ''' velocity '''
     velocity_vector = data[4].strip()[1:-1].split(',')
     velocity_x = float(velocity_vector[0])
-    print(velocity_x)
+    #print(velocity_x)
     velocity_y = float(velocity_vector[1])
-    print(velocity_y)
+    #print(velocity_y)
 
     ''' acceleration '''
     g = 10
@@ -49,14 +49,21 @@ for i in range(0, num_lines):
     ''' total time '''
     velocity = math.sqrt(velocity_x * velocity_x + velocity_y * velocity_y)
     time = velocity / acceleration
-    print(time)
 
-    '''------------------------------------------------------------------------------------------------------'''
+    #print(time)
 
-    plot(current_x, current_y, 'ok', markersize=10,  label='starting point')
+    total_time = time
 
     #time_x_max = velocity_x / acceleration_x
     #time_y_max = velocity_y / acceleration_y
+
+    '''------------------------------------------------------------------------------------------------------'''
+
+    plot(current_x, current_y, 'ok', markersize=8,  label='starting point', zorder=100)
+
+    lista = []
+    out = False
+    end = False
 
     distance_x_max = velocity_x * time - 0.5 * acceleration_x * time * time
     distance_y_max = velocity_y * time - 0.5 * acceleration_y * time * time
@@ -83,27 +90,31 @@ for i in range(0, num_lines):
 
     t = Symbol('t')
 
-    print("KOLEJNY KRĄŻEK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("wspolrzedna x: ", current_x)
+    print("wspolrzedna y: ", current_y)
 
     while distance_y_max > 0 or distance_x_max > 0:
-        print("xddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+        print("-------------------------------------------------------------")
+
+        previous_x = current_x
+        previous_y = current_y
 
         if right:
 
             if top:
 
-                if distance_x_max >= 60 - current_x and distance_y_max >= 40 - current_y:
-                    print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
+                if distance_x_max >= (60 - current_x - radius) and distance_y_max >= (40 - current_y - radius):
+                    #print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
 
                     # liczę czas potrzebny aby uderzł w prawą i górną ścianę i porównuję
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + current_x - 60, t)
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + current_y - 40, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius + current_x - 60, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius + current_y - 40, t)
 
-                    print(distance_x_max)
-                    print(distance_y_max)
+                    #print(distance_x_max)
+                    #print(distance_y_max)
 
-                    print(solution_x_time)
-                    print(solution_y_time)
+                    #print(solution_x_time)
+                    #print(solution_y_time)
 
                     if solution_x_time[0] == complex or solution_x_time[0]==0:
                         time_x_needed = solution_x_time[1]
@@ -115,30 +126,36 @@ for i in range(0, num_lines):
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     if time_x_needed <= time_y_needed:
-                        print("szybicej uderzy w prawą ścianę (lub w prawy górny róg - do przemyslenia ten przypadek)")
+                        #print("szybicej uderzy w prawą ścianę (lub w prawy górny róg - do przemyslenia ten przypadek)")
 
                         current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                         current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
 
-                        distance_x_max -= fabs(velocity_x) * time_x_needed - 0.5 * fabs(acceleration_x) * time_x_needed * time_x_needed
-                        distance_y_max -= fabs(velocity_y) * time_x_needed - 0.5 * fabs(acceleration_y) * time_x_needed * time_x_needed
+                        if current_y < 20.5 and current_y > 19.5:
+                            out = True
+                            distance_y_max = 0
+                            distance_x_max = 0
+                        else:
 
-                        time -= time_x_needed
+                            distance_x_max -= fabs(velocity_x) * time_x_needed - 0.5 * fabs(acceleration_x) * time_x_needed * time_x_needed
+                            distance_y_max -= fabs(velocity_y) * time_x_needed - 0.5 * fabs(acceleration_y) * time_x_needed * time_x_needed
 
-                        velocity_x -= acceleration_x * time_x_needed
-                        velocity_y -= acceleration_y * time_x_needed
+                            time -= time_x_needed
 
-                        velocity_x = -velocity_x
-                        acceleration_x = -acceleration_x
-                        right = False
-                        left = True
+                            velocity_x -= acceleration_x * time_x_needed
+                            velocity_y -= acceleration_y * time_x_needed
+
+                            velocity_x = -velocity_x
+                            acceleration_x = -acceleration_x
+                            right = False
+                            left = True
 
                     else:
-                        print("szybicej uderzy w górną ścianę")
+                        #print("szybicej uderzy w górną ścianę")
 
                         current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                         current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
@@ -157,18 +174,18 @@ for i in range(0, num_lines):
                         top = False
                         down = True
 
-                elif distance_x_max >= 60 - current_x:
-                    print("uderzy w ścianę prawą")
+                elif distance_x_max >= (60 - current_x - radius):
+                    #print("uderzy w ścianę prawą")
 
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + current_x - 60, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius + current_x - 60, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0]==0:
                         time_x_needed = solution_x_time[1]
                     else:
                         time_x_needed = solution_x_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                     current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -186,24 +203,24 @@ for i in range(0, num_lines):
                     right = False
                     left = True
 
-                elif distance_y_max >= 40 - current_y:
-                    print("uderzy w ścianę gorna")
+                elif distance_y_max >= (40 - current_y - radius):
+                    #print("uderzy w ścianę gorna")
 
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + current_y - 40, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius + current_y - 40, t)
 
                     if solution_y_time[0] == complex or solution_y_time[0] == 0:
                         time_y_needed = solution_y_time[1]
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                     current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
 
-                    print(current_x)
-                    print(current_y)
+                    #print(current_x)
+                    #print(current_y)
 
                     distance_x_max -= fabs(velocity_x) * time_y_needed - 0.5 * fabs(acceleration_x) * time_y_needed * time_y_needed
                     distance_y_max -= fabs(velocity_y) * time_y_needed - 0.5 * fabs(acceleration_y) * time_y_needed * time_y_needed
@@ -219,10 +236,10 @@ for i in range(0, num_lines):
                     down = True
 
                 else:
-                    print("zatrzyma się w środku")
+                    #print("zatrzyma się w środku")
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time - 0.5 * acceleration_x * time * time
                     current_y = current_y + velocity_y * time - 0.5 * acceleration_y * time * time
@@ -230,18 +247,22 @@ for i in range(0, num_lines):
                     distance_x_max = 0
                     distance_y_max = 0
 
-                print("rysuję drogę oraz punkt uderzenia o tu ")
-                plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
-                plot(current_x, current_y, 'om', markersize=10, label='stop')
+                    end = True
+
+                #print("rysuję drogę oraz punkt uderzenia o tu ")
+                # plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
+                # plot(current_x, current_y, 'om', markersize=5)
+                # print("wspolrzedna x: ", current_x)
+                # print("wspolrzedna y: ", current_y)
 
             elif down:
 
-                if distance_x_max >= 60 - current_x and distance_y_max >= current_y:
-                    print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
+                if distance_x_max >= (60 - current_x - radius) and distance_y_max >= (current_y - radius):
+                    #print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
 
                     # liczę czas potrzebny aby uderzł w prawą i dolną ścianę i porównuję
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + current_x - 60, t)
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t - current_y, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius + current_x - 60, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius - current_y, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0] == 0:
                         time_x_needed = solution_x_time[1]
@@ -253,11 +274,11 @@ for i in range(0, num_lines):
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     if time_x_needed <= time_y_needed:
-                        print("szybicej uderzy w prawą ścianę (lub w prawy dolny róg - do przemyslenia ten przypadek)")
+                        #print("szybicej uderzy w prawą ścianę (lub w prawy dolny róg - do przemyslenia ten przypadek)")
 
                         current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                         current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -276,7 +297,7 @@ for i in range(0, num_lines):
                         left = True
 
                     else:
-                        print("szybicej uderzy w dolna ścianę")
+                        #print("szybicej uderzy w dolna ścianę")
 
                         current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                         current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
@@ -295,18 +316,18 @@ for i in range(0, num_lines):
                         down = False
                         top = True
 
-                elif distance_x_max >= 60 - current_x:
-                    print("uderzy w ścianę prawą")
+                elif distance_x_max >= (60 - current_x - radius):
+                    #print("uderzy w ścianę prawą")
 
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + current_x - 60, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius + current_x - 60, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0] == 0:
                         time_x_needed = solution_x_time[1]
                     else:
                         time_x_needed = solution_x_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                     current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -324,35 +345,35 @@ for i in range(0, num_lines):
                     right = False
                     left = True
 
-                elif distance_y_max >= current_y:
-                    print("uderzy w ścianę dolna!!!!")
+                elif distance_y_max >= (current_y - radius):
+                    #print("uderzy w ścianę dolna!!!!")
 
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t - current_y, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius - current_y, t)
 
                     if solution_y_time[0] == complex or solution_y_time[0] == 0:
                         time_y_needed = solution_y_time[1]
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
-                    print(previous_x)
-                    print(previous_y)
+                    #print(previous_x)
+                    #print(previous_y)
 
-                    print(distance_y_max)
-                    print(time_y_needed)
-                    print(time)
+                    #print(distance_y_max)
+                    #print(time_y_needed)
+                    #print(time)
 
                     current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                     current_y = fabs(round(current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed,2))
 
-                    print(current_x)
-                    print(round(current_y,2))
+                    #print(current_x)
+                    #print(round(current_y,2))
 
                     distance_x_max -= fabs(velocity_x) * time_y_needed - 0.5 * fabs(acceleration_x) * time_y_needed * time_y_needed
                     distance_y_max -= fabs(velocity_y) * time_y_needed - 0.5 * fabs(acceleration_y) * time_y_needed * time_y_needed
-                    print(distance_y_max)
+                    #print(distance_y_max)
 
                     time -= time_y_needed
 
@@ -365,10 +386,10 @@ for i in range(0, num_lines):
                     top = True
 
                 else:
-                    print("zatrzyma się w środku")
+                    #print("zatrzyma się w środku")
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time - 0.5 * acceleration_x * time * time
                     current_y = current_y + velocity_y * time - 0.5 * acceleration_y * time * time
@@ -376,37 +397,24 @@ for i in range(0, num_lines):
                     distance_x_max = 0
                     distance_y_max = 0
 
-                print("rysuję drogę oraz punkt uderzenia")
-                plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
-                plot(current_x, current_y, 'om', markersize=10, label='stop')
+                    end = True
 
-            '''else:
-                # tylko prawo
-                pass
-                if distance_x_max > 60 - current_x:
-                    print("poza lodowiskiem na współrzędnej x")
-
-                    # liczę czas jaki potrzebuje krążek aby dotrzeć do ściany lodowiska
-                    t = Symbol('t')
-                    solution = solve(velocity_x * t - 0.5 * acceleration_x * t * t + current_x - 60, t)
-                    if solution[0] == complex or solution[0] == 0:
-                        time_x_needed = solution[1]
-                    else:
-                        time_x_needed = solution[0]
-
-                    if time_x_needed > time_y_max:
-                        print("zmiana kierunku ruchu w środku, prędkość po y spadła do 0")'''
+                #print("rysuję drogę oraz punkt uderzenia")
+                # plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
+                # plot(current_x, current_y, 'om', markersize=5)
+                # print("wspolrzedna x: ", current_x)
+                # print("wspolrzedna y: ", current_y)
 
         elif left:
 
             if top:
 
-                if distance_x_max >= current_x and distance_y_max >= 40 - current_y:
-                    print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
+                if distance_x_max >= (current_x - radius) and distance_y_max >= (40 - current_y - radius):
+                    #print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
 
                     # liczę czas potrzebny aby uderzł w prawą i górną ścianę i porównuję
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t - current_x, t)
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + current_y - 40, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius - current_x, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius + current_y - 40, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0] == 0:
                         time_x_needed = solution_x_time[1]
@@ -418,11 +426,11 @@ for i in range(0, num_lines):
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     if time_x_needed <= time_y_needed:
-                        print("szybicej uderzy w lewa ścianę (lub w lewy górny róg - do przemyslenia ten przypadek)")
+                        #print("szybicej uderzy w lewa ścianę (lub w lewy górny róg - do przemyslenia ten przypadek)")
 
                         current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                         current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -441,7 +449,7 @@ for i in range(0, num_lines):
                         right = True
 
                     else:
-                        print("szybicej uderzy w górną ścianę")
+                        #print("szybicej uderzy w górną ścianę")
 
                         current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                         current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
@@ -460,18 +468,18 @@ for i in range(0, num_lines):
                         top = False
                         down = True
 
-                elif distance_x_max >= current_x:
-                    print("uderzy w ścianę lewa")
+                elif distance_x_max >= (current_x - radius):
+                    #print("uderzy w ścianę lewa")
 
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t - current_x, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius - current_x, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0] == 0:
                         time_x_needed = solution_x_time[1]
                     else:
                         time_x_needed = solution_x_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                     current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -489,18 +497,18 @@ for i in range(0, num_lines):
                     left = False
                     right = True
 
-                elif distance_y_max >= 40 - current_y:
-                    print("uderzy w ścianę gorna")
+                elif distance_y_max >= 40 - current_y - radius:
+                    #print("uderzy w ścianę gorna")
 
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + current_y - 40, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius + current_y - 40, t)
 
                     if solution_y_time[0] == complex or solution_y_time[0] == 0:
                         time_y_needed = solution_y_time[1]
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                     current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
@@ -519,10 +527,10 @@ for i in range(0, num_lines):
                     down = True
 
                 else:
-                    print("zatrzyma się w środku")
+                    #print("zatrzyma się w środku")
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time - 0.5 * acceleration_x * time * time
                     current_y = current_y + velocity_y * time - 0.5 * acceleration_y * time * time
@@ -530,18 +538,22 @@ for i in range(0, num_lines):
                     distance_x_max = 0
                     distance_y_max = 0
 
-                print("rysuję drogę oraz punkt uderzenia")
-                plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
-                plot(current_x, current_y, 'om', markersize=10, label='stop')
+                    end = True
+
+                #print("rysuję drogę oraz punkt uderzenia")
+                # plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
+                # plot(current_x, current_y, 'om', markersize=5)
+                # print("wspolrzedna x: ", current_x)
+                # print("wspolrzedna y: ", current_y)
 
             elif down:
 
-                if distance_x_max >= current_x and distance_y_max >= current_y:
-                    print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
+                if distance_x_max >= (current_x - radius) and distance_y_max >= (current_y - radius):
+                    #print("krążek na pewno wyjdzie poza lodowisko, nie wiadomo, w ktorą ściane uderzy szybciej")
 
                     # liczę czas potrzebny aby uderzł w prawą i dolną ścianę i porównuję
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t - current_x, t)
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t - current_y, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius - current_x, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius - current_y, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0] == 0:
                         time_x_needed = solution_x_time[1]
@@ -553,11 +565,11 @@ for i in range(0, num_lines):
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     if time_x_needed <= time_y_needed:
-                        print("szybicej uderzy w lewa ścianę (lub w lewy dolny róg - do przemyslenia ten przypadek)")
+                        #print("szybicej uderzy w lewa ścianę (lub w lewy dolny róg - do przemyslenia ten przypadek)")
 
                         current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                         current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -576,7 +588,7 @@ for i in range(0, num_lines):
                         right = True
 
                     else:
-                        print("szybicej uderzy w dolna ścianę")
+                        #print("szybicej uderzy w dolna ścianę")
 
                         current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                         current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
@@ -595,18 +607,18 @@ for i in range(0, num_lines):
                         down = False
                         top = True
 
-                elif distance_x_max >= current_x:
-                    print("uderzy w ścianę lewa")
+                elif distance_x_max >= (current_x - radius):
+                    #print("uderzy w ścianę lewa")
 
-                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t - current_x, t)
+                    solution_x_time = solve(fabs(velocity_x) * t - 0.5 * fabs(acceleration_x) * t * t + radius - current_x, t)
 
                     if solution_x_time[0] == complex or solution_x_time[0] == 0:
                         time_x_needed = solution_x_time[1]
                     else:
                         time_x_needed = solution_x_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_x_needed - 0.5 * acceleration_x * time_x_needed * time_x_needed
                     current_y = current_y + velocity_y * time_x_needed - 0.5 * acceleration_y * time_x_needed * time_x_needed
@@ -624,18 +636,18 @@ for i in range(0, num_lines):
                     left = False
                     right = True
 
-                elif distance_y_max >= current_y:
-                    print("uderzy w ścianę dolna")
+                elif distance_y_max >= (current_y - radius):
+                    #print("uderzy w ścianę dolna")
 
-                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t - current_y, t)
+                    solution_y_time = solve(fabs(velocity_y) * t - 0.5 * fabs(acceleration_y) * t * t + radius - current_y, t)
 
                     if solution_y_time[0] == complex or solution_y_time[0] == 0:
                         time_y_needed = solution_y_time[1]
                     else:
                         time_y_needed = solution_y_time[0]
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time_y_needed - 0.5 * acceleration_x * time_y_needed * time_y_needed
                     current_y = current_y + velocity_y * time_y_needed - 0.5 * acceleration_y * time_y_needed * time_y_needed
@@ -654,10 +666,10 @@ for i in range(0, num_lines):
                     top = True
 
                 else:
-                    print("zatrzyma się w środku")
+                    #print("zatrzyma się w środku")
 
-                    previous_x = current_x
-                    previous_y = current_y
+                    # previous_x = current_x
+                    # previous_y = current_y
 
                     current_x = current_x + velocity_x * time - 0.5 * acceleration_x * time * time
                     current_y = current_y + velocity_y * time - 0.5 * acceleration_y * time * time
@@ -665,16 +677,36 @@ for i in range(0, num_lines):
                     distance_x_max = 0
                     distance_y_max = 0
 
-                print("rysuję drogę oraz punkt uderzenia")
-                plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
-                plot(current_x, current_y, 'om', markersize=10, label='stop')
+                    end = True
 
-                '''else:
-                # tylko lewo
-                pass'''
+        #print("rysuję drogę oraz punkt uderzenia")
 
-        else:
-            print("ERROR ------------- ")
+        plot([previous_x, current_x], [previous_y, current_y], 'm-', linewidth=3)
+        if not out:
+            plot(current_x, current_y, 'om', markersize=5)
+        print("wspolrzedna x: ", current_x)
+        print("wspolrzedna y: ", current_y)
+        if not end:
+            lista.append(round(current_x, 2))
+            lista.append(round(current_y, 2))
+
+    print(lista)
+
+    if out:
+        output_file.write(f"(out); {round(total_time, 2)}; ")
+    else:
+        output_file.write(f"({round(current_x, 2)}, {round(current_y, 2)}); {round(total_time,2)}; ")
+
+    for j in range (0, len(lista), 2):
+        output_file.write(f"({lista[j]}, {lista[j+1]}); ")
+
+    output_file.write("\n")
+
+    if not out:
+        plot(current_x, current_y, 'om', markersize=6, label='bounce points')
+        plot(current_x, current_y, 'ok', markersize=8, label='end point')
+    else:
+        plot(previous_x, previous_y, 'om', markersize=6, label='bounce points')
 
     rink_width = np.linspace(0, 60)
     rink_height1 = np.linspace(0, 19.5)
@@ -693,3 +725,6 @@ for i in range(0, num_lines):
     title(f"Hockey Puck No.: {i + 1}")
     savefig(f"{i + 1}.png")
     show()
+    print("KOLEJNY KRĄŻEK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+output_file.close()
