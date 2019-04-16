@@ -117,6 +117,7 @@ for i in range(0, num_lines):
                             out = True
                             distance_y_max = 0
                             distance_x_max = 0
+                            time -= time_x_needed
 
                         else:
 
@@ -170,6 +171,8 @@ for i in range(0, num_lines):
                         out = True
                         distance_y_max = 0
                         distance_x_max = 0
+
+                        time -= time_x_needed
                     else:
 
                         distance_x_max -= fabs(velocity_x) * time_x_needed - 0.5 * fabs(acceleration_x) * time_x_needed * time_x_needed
@@ -250,6 +253,9 @@ for i in range(0, num_lines):
                             out = True
                             distance_y_max = 0
                             distance_x_max = 0
+
+                            time -= time_x_needed
+
                         else:
                             distance_x_max -= fabs(velocity_x) * time_x_needed - 0.5 * fabs(acceleration_x) * time_x_needed * time_x_needed
                             distance_y_max -= fabs(velocity_y) * time_x_needed - 0.5 * fabs(acceleration_y) * time_x_needed * time_x_needed
@@ -301,6 +307,8 @@ for i in range(0, num_lines):
                         out = True
                         distance_y_max = 0
                         distance_x_max = 0
+
+                        time -= time_x_needed
 
                     else:
 
@@ -387,6 +395,7 @@ for i in range(0, num_lines):
                             out = True
                             distance_y_max = 0
                             distance_x_max = 0
+                            time -= time_x_needed
 
                         else:
 
@@ -440,6 +449,7 @@ for i in range(0, num_lines):
                         out = True
                         distance_y_max = 0
                         distance_x_max = 0
+                        time -= time_x_needed
 
                     else:
 
@@ -521,6 +531,7 @@ for i in range(0, num_lines):
                             out = True
                             distance_y_max = 0
                             distance_x_max = 0
+                            time -=time_x_needed
 
                         else:
 
@@ -574,6 +585,7 @@ for i in range(0, num_lines):
                         out = True
                         distance_y_max = 0
                         distance_x_max = 0
+                        time -= time_x_needed
 
                     else:
 
@@ -639,7 +651,7 @@ for i in range(0, num_lines):
             lista.append(round(current_y, 2))
 
     if out:
-        output_file.write(f"(out); {round(total_time, 2)}; ")
+        output_file.write(f"(out); {round(total_time-time, 2)}; ")
     else:
         output_file.write(f"({round(current_x, 2)}, {round(current_y, 2)}); {round(total_time,2)}; ")
 
